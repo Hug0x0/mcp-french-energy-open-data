@@ -170,6 +170,34 @@ server.tool('french_energy_open_data_get_eco2mix_latest', 'Fetch recent national
   } catch (error) { return errorResult(error instanceof Error ? error.message : 'Failed to fetch éCO2mix'); }
 });
 
+server.tool('french_energy_open_data_get_eco2mix_summary', 'Fetch the latest national éCO2mix observation and compute production mix percentages.', {
+}, async () => {
+  try {
+    const data = await odsRecords('https://odre.opendatasoft.com', 'eco2mix-national-tr', { order_by: 'date_heure DESC', limit: 1 });
+    const row = Array.isArray(data.results) ? data.results[0] as Record<string, unknown> | undefined : undefined;
+    if (!row) return errorResult('No éCO2mix row returned');
+    const technologies = ['fioul', 'charbon', 'gaz', 'nucleaire', 'eolien', 'solaire', 'hydraulique', 'bioenergies'];
+    const production = technologies.map((technology) => ({
+      technology,
+      mw: typeof row[technology] === 'number' ? row[technology] : Number(row[technology] ?? 0),
+    }));
+    const totalProductionMw = production.reduce((sum, item) => sum + (Number.isFinite(item.mw) ? item.mw : 0), 0);
+    return jsonResult({
+      source: 'ODRE eco2mix-national-tr',
+      timestamp: row.date_heure,
+      consumption_mw: row.consommation,
+      total_production_mw: totalProductionMw,
+      mix: production.map((item) => ({
+        ...item,
+        share_pct: totalProductionMw > 0 ? Math.round((item.mw / totalProductionMw) * 1000) / 10 : undefined,
+      })),
+      raw: row,
+    });
+  } catch (error) {
+    return errorResult(error instanceof Error ? error.message : 'Failed to summarize éCO2mix');
+  }
+});
+
 server.tool('french_energy_open_data_search_odre_catalog', 'Search the ODRE OpenDataSoft catalog.', {
   query: z.string().default('consommation'),
   limit: z.number().int().min(1).max(100).default(10),

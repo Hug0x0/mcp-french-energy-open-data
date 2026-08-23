@@ -6,6 +6,8 @@ MCP server for French open energy data: ODRE, éCO2mix, RTE/Enedis source discov
 
 Run the MCP and call `french_energy_open_data_get_sources` first to inspect source coverage. This server also exposes domain-specific tools for the topic described above.
 
+Includes ODRE catalog search, recent éCO2mix rows, and a computed electricity mix summary.
+
 ## Install
 
 ```bash
