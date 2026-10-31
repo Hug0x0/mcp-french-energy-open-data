@@ -1,7 +1,7 @@
 {
   "name": "mcp-french-energy-open-data",
   "version": "0.1.0",
-  "description": "MCP server for French open energy data: ODRE, éCO2mix, RTE/Enedis source discovery, and electricity mix helpers.",
+  "description": "MCP server for French open energy data: ODRE, \u00e9CO2mix, RTE/Enedis source discovery, and electricity mix helpers.",
   "type": "module",
   "bin": {
     "mcp-french-energy-open-data": "./dist/index.js"
@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
